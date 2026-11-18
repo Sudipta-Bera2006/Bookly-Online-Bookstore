@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}About Us - Bookly{% endblock %}
+
+{% block body %}
+
+<!-- Hero / About Intro -->
+<section class="padding-large">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 mb-4 mb-lg-0">
+        <img src="{% static 'images/banner-image3.png' %}" 
+             class="img-fluid rounded-4 shadow-lg" 
+             alt="About Bookly">
+      </div>
+      <div class="col-lg-6">
+        <span class="badge bg-primary mb-3 px-3 py-2 rounded-pill">Our Story</span>
+        <h1 class="display-5 fw-bold mb-4">About Bookly</h1>
+        <p>
+          Welcome to <strong>Bookly</strong> — your trusted destination for discovering amazing books. 
+          We believe every book has the power to inspire, educate, and transform lives.
+        </p>
+        <p class="mb-3">
+          Founded with a deep passion for reading, Bookly offers a carefully curated collection of 
+          fiction, non-fiction, romance, thriller, sci-fi, self-help, and more.
+        </p>
+        <p class="mb-4">
+          Our mission is simple: to make quality books accessible to everyone while delivering 
+          excellent customer service and a seamless shopping experience.
+        </p>
+        <div class="d-flex flex-wrap gap-3">
+          <a href="{% url 'shop' %}" class="btn btn-primary btn-lg px-4">Explore Our Collection</a>
+          <a href="#our-values" class="btn btn-outline-dark btn-lg px-4">Our Values</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-5 bg-dark text-white">
+  <div class="container">
+    <div class="row text-center g-4">
+      <div class="col-6 col-md-3">
+        <h2 class="display-5 fw-bold mb-1">10,000+</h2>
+        <p class="mb-0 text-white-50">Books Available</p>
+      </div>
+      <div class="col-6 col-md-3">
+        <h2 class="display-5 fw-bold mb-1">25,000+</h2>
+        <p class="mb-0 text-white-50">Happy Readers</p>
+      </div>
+      <div class="col-6 col-md-3">
+        <h2 class="display-5 fw-bold mb-1">50+</h2>
+        <p class="mb-0 text-white-50">Genres</p>
+      </div>
+      <div class="col-6 col-md-3">
+        <h2 class="display-5 fw-bold mb-1">4.9★</h2>
+        <p class="mb-0 text-white-50">Average Rating</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Mission & Vision -->
+<section class="padding-large">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="p-4 p-lg-5 bg-light rounded-4 h-100 border-start border-primary border-4">
+          <h3 class="mb-3">Our Mission</h3>
+          <p>
+            To make reading joyful, affordable, and accessible for everyone. 
+            We carefully select every title so that our customers can discover stories that 
+            educate, entertain, and inspire personal growth.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="p-4 p-lg-5 bg-light rounded-4 h-100 border-start border-success border-4">
+          <h3 class="mb-3">Our Vision</h3>
+          <p>
+            To become the most loved online bookstore in the country — a place where 
+            book lovers feel at home, discover new authors, and build a lifelong reading habit.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="padding-large" style="background-color: #f8f9fa;">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold">Why Choose Bookly</h2>
+      <p>
+        We go beyond just selling books. Here’s what makes the Bookly experience special.
+      </p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-3">
+        <div class="text-center p-4 bg-white rounded-4 shadow-sm h-100 hover-lift">
+          <div class="mb-3">
+            <span class="display-6">📚</span>
+          </div>
+          <h5 class="mb-3">Wide Selection</h5>
+          <p>
+            Thousands of carefully curated books across fiction, non-fiction, and every major genre.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="text-center p-4 bg-white rounded-4 shadow-sm h-100 hover-lift">
+          <div class="mb-3">
+            <span class="display-6">🚚</span>
+          </div>
+          <h5 class="mb-3">Fast Delivery</h5>
+          <p>
+            Quick and reliable shipping so your books arrive safely and on time, every time.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="text-center p-4 bg-white rounded-4 shadow-sm h-100 hover-lift">
+          <div class="mb-3">
+            <span class="display-6">💰</span>
+          </div>
+          <h5 class="mb-3">Best Prices</h5>
+          <p>
+            Competitive pricing with regular discounts and exclusive offers for book lovers.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="text-center p-4 bg-white rounded-4 shadow-sm h-100 hover-lift">
+          <div class="mb-3">
+            <span class="display-6">💬</span>
+          </div>
+          <h5 class="mb-3">Friendly Support</h5>
+          <p>
+            Dedicated customer care ready to help you with orders, recommendations, and queries.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Our Values -->
+<section class="padding-large" id="our-values">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold">Our Core Values</h2>
+      <p>The principles that guide everything we do at Bookly</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="d-flex align-items-start">
+          <div class="flex-shrink-0 me-3">
+            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
+                 style="width: 48px; height: 48px;">1</div>
+          </div>
+          <div>
+            <h5>Quality First</h5>
+            <p>Every book is selected with care for content, print quality, and reader experience.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="d-flex align-items-start">
+          <div class="flex-shrink-0 me-3">
+            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
+                 style="width: 48px; height: 48px;">2</div>
+          </div>
+          <div>
+            <h5>Customer Delight</h5>
+            <p>We aim to exceed expectations with every order and interaction.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="d-flex align-items-start">
+          <div class="flex-shrink-0 me-3">
+            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
+                 style="width: 48px; height: 48px;">3</div>
+          </div>
+          <div>
+            <h5>Love for Reading</h5>
+            <p>We are readers ourselves and want to spread the joy of books far and wide.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Meet the Team (Placeholder) -->
+<section class="padding-large" style="background-color: #f8f9fa;">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h>The passionate people behind Bookly</p>
+    </div>
+    <div class="row g-4 justify-content-center">
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="text-center">
+          <div class="rounded-circle bg-dark mx-auto mb-3 d-flex align-items-center justify-content-center text-white" 
+     style="width: 120px; height: 120px; font-size: 2.5rem;">
+            S
+          </div>
+          <h5 class="mb-1">Sudipta Bera</h5>
+          <p>[Founder & CEO]</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="text-center">
+          <div class="rounded-circle bg-dark mx-auto mb-3 d-flex align-items-center justify-content-center text-white" 
+     style="width: 120px; height: 120px; font-size: 2.5rem;">
+            D
+          </div>
+          <h5 class="mb-1">Deep Bishal</h5>
+          <p>[Head of Curation]</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="text-center">
+          <div class="rounded-circle bg-dark mx-auto mb-3 d-flex align-items-center justify-content-center text-white" 
+     style="width: 120px; height: 120px; font-size: 2.5rem;">
+            R
+          </div>
+          <h5 class="mb-1">Rupam Adhikary</h5>
+          <p>[Operations Lead]</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="padding-large">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold">What Our Readers Say</h2>
+      <p>Real feedback from book lovers like you</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="p-4 bg-light rounded-4 h-100">
+          <div class="mb-3 text-warning">★★★★★</div>
+          <p class="mb-3">
+            “Bookly has the best collection of fiction I’ve found online. Delivery is always fast and packaging is excellent.”
+          </p>
+          <h6 class="mb-0">— Ananya K.</h6>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-4 bg-light rounded-4 h-100">
+          <div class="mb-3 text-warning">★★★★★</div>
+          <p class="mb-3">
+            “I love the discounts and the curated recommendations. It feels like a real bookstore experience online.”
+          </p>
+          <h6 class="mb-0">— Vikram S.</h6>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-4 bg-light rounded-4 h-100">
+          <div class="mb-3 text-warning">★★★★★</div>
+          <p class="mb-3">
+            “Great customer support and quality books. I’ve ordered multiple times and never been disappointed.”
+          </p>
+          <h6 class="mb-0">— Neha R.</h6>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Final CTA -->
+<section class="py-5 bg-primary text-white">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-3">Ready to find your next favourite book?</h2>
+    <p class="lead mb-4 opacity-75">
+      Explore thousands of titles and enjoy a seamless shopping experience with Bookly.
+    </p>
+    <a href="{% url 'shop' %}" class="btn btn-light btn-lg px-5 fw-semibold">
+      Browse Collection
+    </a>
+  </div>
+</section>
+
+{% endblock body %}

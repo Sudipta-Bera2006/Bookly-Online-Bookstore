@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Registration | Bookly</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+
+        /* =========================
+           General Styling
+        ========================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 25px 15px;
+            background-color: #f4f6f9;
+            font-family: Arial, sans-serif;
+        }
+
+        /* =========================
+           Registration Container
+        ========================= */
+
+        .register-container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .register-card {
+            background-color: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        /* =========================
+           Header
+        ========================= */
+
+        .register-header {
+            text-align: center;
+            padding: 28px 20px 22px;
+            background-color: #ffffff;
+            border-bottom: 1px solid #eeeeee;
+        }
+
+        .register-icon {
+            font-size: 42px;
+            color: #0d6efd;
+            margin-bottom: 8px;
+        }
+
+        .register-header h3 {
+            color: #212529;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .register-header p {
+            color: #777777;
+            font-size: 14px;
+            margin-bottom: 0;
+        }
+
+        /* =========================
+           Form Styling
+        ========================= */
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #343a40;
+            margin-bottom: 8px;
+        }
+
+        .input-group {
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+
+        .input-group:focus-within {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.12);
+        }
+
+        .input-group-text {
+            background-color: #f8f9fa;
+            border: none;
+            color: #0d6efd;
+            padding: 12px 14px;
+        }
+
+        .form-control {
+            border: none;
+            padding: 12px;
+            box-shadow: none !important;
+            min-width: 0;
+        }
+
+        .password-toggle {
+            cursor: pointer;
+        }
+
+        /* =========================
+           Buttons
+        ========================= */
+
+        .register-btn {
+            background-color: #0d6efd;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .register-btn:hover {
+            background-color: #0b5ed7;
+        }
+
+        .clear-btn {
+            border-radius: 8px;
+            padding: 11px;
+            font-weight: 600;
+        }
+
+        /* =========================
+           Login Link
+        ========================= */
+
+        .login-link {
+            text-align: center;
+            margin-top: 22px;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .login-link a {
+            color: #0d6efd;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* =========================
+           Django Messages
+        ========================= */
+
+        .alert {
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 0;
+        }
+
+        /* =========================
+           Footer
+        ========================= */
+
+        .footer-text {
+            text-align: center;
+            margin-top: 20px;
+            color: #777777;
+            font-size: 13px;
+        }
+
+        /* =========================
+           Responsive Design
+        ========================= */
+
+        @media (max-width: 576px) {
+
+            body {
+                padding: 15px;
+            }
+
+            .register-container {
+                max-width: 100%;
+            }
+
+            .card-body {
+                padding: 22px 18px;
+            }
+
+            .register-header {
+                padding: 24px 15px 18px;
+            }
+
+            .register-header h3 {
+                font-size: 23px;
+            }
+
+        }
+
+        @media (max-width: 350px) {
+
+            .card-body {
+                padding: 18px 14px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- Registration Container -->
+    <div class="register-container">
+
+        <div class="card register-card">
+
+            <!-- Header -->
+            <div class="register-header">
+
+                <div class="register-icon">
+                    <i class="bi bi-person-plus-fill"></i>
+                </div>
+
+                <h3>Create Account</h3>
+
+                <p>Join Bookly and explore your favourite books</p>
+
+            </div>
+
+            <!-- Django Messages -->
+            {% if messages %}
+
+                <div class="px-4 pt-3">
+
+                    {% for message in messages %}
+
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show"
+                             role="alert">
+
+                            <i class="bi bi-info-circle-fill me-2"></i>
+
+                            {{ message }}
+
+                            <button type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="alert">
+                            </button>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+            <!-- Registration Form -->
+            <div class="card-body">
+
+                <form method="POST">
+
+                    {% csrf_token %}
+
+                    <!-- First Name -->
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            First Name
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                <i class="bi bi-person-fill"></i>
+                            </span>
+
+                            <input type="text"
+                                   class="form-control"
+                                   name="first_name"
+                                   placeholder="Enter first name"
+                                   required>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Last Name -->
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Last Name
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                <i class="bi bi-person"></i>
+                            </span>
+
+                            <input type="text"
+                                   class="form-control"
+                                   name="last_name"
+                                   placeholder="Enter last name"
+                                   required>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Email Address
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                <i class="bi bi-envelope-fill"></i>
+                            </span>
+
+                            <input type="email"
+                                   class="form-control"
+                                   name="email"
+                                   placeholder="Enter your email"
+                                   required>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Username -->
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            User Name
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                <i class="bi bi-person-badge-fill"></i>
+                            </span>
+
+                            <input type="text"
+                                   class="form-control"
+                                   name="user_name"
+                                   placeholder="Choose a username"
+                                   required>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Password
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                <i class="bi bi-lock-fill"></i>
+                            </span>
+
+                            <input type="password"
+                                   class="form-control"
+                                   id="password"
+                                   name="password"
+                                   placeholder="Create a password"
+                                   required>
+
+                            <button type="button"
+                                    class="input-group-text password-toggle"
+                                    id="togglePassword"
+                                    aria-label="Show password">
+
+                                <i class="bi bi-eye-fill" id="eyeIcon"></i>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="d-grid gap-3 mt-4">
+
+                        <button type="submit"
+                                class="btn btn-primary register-btn">
+
+                            <i class="bi bi-person-check-fill me-2"></i>
+                            Create Account
+
+                        </button>
+
+                        <button type="reset"
+                                class="btn btn-outline-secondary clear-btn">
+
+                            <i class="bi bi-arrow-counterclockwise me-2"></i>
+                            Clear
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+                <!-- Login Link -->
+                <div class="login-link">
+
+                    Already have an account?
+
+                    <a href="{% url 'user_login' %}">
+                        Login Now
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="footer-text">
+            © 2026 Bookly. All Rights Reserved.
+        </div>
+
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Show / Hide Password -->
+    <script>
+
+        const togglePassword = document.getElementById("togglePassword");
+        const password = document.getElementById("password");
+        const eyeIcon = document.getElementById("eyeIcon");
+
+        togglePassword.addEventListener("click", function () {
+
+            if (password.type === "password") {
+
+                password.type = "text";
+
+                eyeIcon.classList.replace(
+                    "bi-eye-fill",
+                    "bi-eye-slash-fill"
+                );
+
+                togglePassword.setAttribute(
+                    "aria-label",
+                    "Hide password"
+                );
+
+            } else {
+
+                password.type = "password";
+
+                eyeIcon.classList.replace(
+                    "bi-eye-slash-fill",
+                    "bi-eye-fill"
+                );
+
+                togglePassword.setAttribute(
+                    "aria-label",
+                    "Show password"
+                );
+
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>
+
+
+
+{% comment %} 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Registration Form</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-6">
+
+            <div class="card shadow">
+
+                <div class="card-header bg-primary text-white text-center">
+                    <h3>Registration Form</h3>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div
+                            class="alert {{message.tags}} my-3"
+                            role="alert"
+                        >
+                            <strong>{{message}}</strong>
+                        </div>
+                            
+                    {% endfor %}        
+                {% endif %}
+
+                <div class="card-body">
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        <!-- Name -->
+                        <div class="mb-3">
+                            <label class="form-label">First Name</label>
+                            <input type="text"
+                                   class="form-control"
+                                   name="first_name"
+                                   placeholder="Enter first name"
+                                   required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Last Name</label>
+                            <input type="text"
+                                   class="form-control"
+                                   name="last_name"
+                                   placeholder="Enter last name"
+                                   required>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            <input type="email"
+                                   class="form-control"
+                                   name="email"
+                                   placeholder="Enter your email"
+                                   required>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="mb-3">
+                            <label class="form-label">User Name</label>
+                            <input type="text"
+                                   class="form-control"
+                                   name="user_name"
+                                   placeholder="Enter user name"
+                                   required>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+
+                            <input type="password"
+                                   class="form-control"
+                                   name="password"
+                                   placeholder="Enter password"
+                                   required>
+                                   <span>You want to login <a href="{% url "user_login" %}">Login now!</a></span>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-grid gap-2">
+
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                Register
+                            </button>
+
+                            <button type="reset"
+                                    class="btn btn-secondary">
+                                Clear
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
+ {% endcomment %}

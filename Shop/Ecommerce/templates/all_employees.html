@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <title>All Employees</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <!-- Bootstrap CSS v5.3.8 -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+            crossorigin="anonymous"
+        />
+    </head>
+
+    <body>
+        <div class="container my-5">
+            <div class="text-center">
+                {% if user.is_authenticated %}
+                    Hi, {{ user.first_name }}
+                    <br>
+                    <a href="{% url "user_logout" %}">Log Out</a>
+                {% endif %}
+                <h2>All Employees</h2>
+                <a href="{% url "create_employee" %}" class="btn btn-primary">Create New Employee</a>
+                
+                {% if user.is_authenticated %}
+
+                {% else %}
+                    <a href="{% url "user_login" %}">Login/Register</a>
+                {% endif %}
+                <hr>
+            </div>
+            {% if messages %}
+                {% for message in messages %}
+                    <div
+                        class="alert {{message.tags}} my-3"
+                        role="alert"
+                    >
+                        <strong>{{message}}</strong>
+                    </div>
+                            
+                {% endfor %}        
+            {% endif %}
+            <div>
+                <div
+                    class="table-responsive"
+                >
+                    <table
+                        class="table table-primary"
+                    >
+                        <thead>
+                            <tr>
+                                <th scope="col">Emp ID</th>
+                                <th scope="col">Emp Name</th>
+                                <th scope="col">Emp Email</th>
+                                <th scope="col">Emp Phone</th>
+                                <th scope="col">Emp Dept</th>
+                                <th scope="col">Emp dob</th>
+                                <th scope="col">Emp Address</th>
+                                <th scope="col">Emp Join Date</th>
+                                <th colspan=2>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if emps %}
+                                {% for emp in emps %}
+                                    <tr>
+                                        <td>{{emp.id}}</td>
+                                        <td>{{emp.emp_name}}</td>
+                                        <td>{{emp.emp_email}}</td>
+                                        <td>{{emp.emp_mobile}}</td>
+                                        <td>{{emp.emp_dept}}</td>
+                                        <td>{{emp.emp_dob}}</td>
+                                        <td>{{emp.emp_address}}</td>
+                                        <td>{{emp.emp_joining_date}}</td>
+                                        <td><a href="{% url "delete_employee" emp.id %}" class="btn btn-danger btn-sm">Delete</a></td>
+                                        <td><a href="{% url "update_employee"  emp.id%}" class="btn btn-success btn-sm">Update</a></td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                
+            </div>
+        </div>
+        <!-- Bootstrap JavaScript Bundle (includes Popper) -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+            crossorigin="anonymous"
+        ></script>
+    </body>
+</html>

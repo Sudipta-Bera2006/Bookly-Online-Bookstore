@@ -1,0 +1,613 @@
+
+{% extends 'base.html' %}
+
+{% block title %}My Orders - Bookly{% endblock %}
+
+{% block body %}
+
+<style>
+    .orders-section {
+        background: #f8fafc;
+        min-height: 80vh;
+        padding: 50px 0;
+    }
+
+    .orders-container {
+        max-width: 1200px;
+        margin: auto;
+    }
+
+    .orders-main-card {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 5px 20px rgba(0,0,0,.04);
+    }
+
+    .order-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 13px;
+        padding: 22px;
+        margin-bottom: 22px;
+    }
+
+    .order-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .order-id {
+        color: #4f46e5;
+        font-weight: 700;
+        word-break: break-all;
+    }
+
+    .order-label {
+        color: #64748b;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+
+    .order-value {
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .book-item {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 17px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .book-image {
+        width: 75px;
+        height: 100px;
+        object-fit: contain;
+        border-radius: 7px;
+        background: #f8fafc;
+    }
+
+    .status {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: capitalize;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-success,
+    .status-delivered {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .status-processing,
+    .status-shipped {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .status-failed,
+    .status-cancelled,
+    .status-returned {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .order-total {
+        font-size: 21px;
+        font-weight: 700;
+        color: #15803d;
+    }
+
+    .empty-orders {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    @media(max-width:576px) {
+        .orders-main-card {
+            padding: 15px;
+        }
+
+        .order-card {
+            padding: 15px;
+        }
+
+        .book-image {
+            width: 60px;
+            height: 85px;
+        }
+    }
+</style>
+
+
+<section class="orders-section">
+
+<div class="container orders-container">
+
+    <div class="mb-4">
+
+        <h2 class="fw-bold">
+            My Orders
+        </h2>
+
+        <p class="text-muted">
+            View your purchased books and track your orders.
+        </p>
+
+    </div>
+
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+
+                {{ message }}
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert">
+                </button>
+
+            </div>
+        {% endfor %}
+    {% endif %}
+
+
+    <div class="orders-main-card">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <h4 class="fw-bold mb-0">
+                <i class="bi bi-bag-check me-2"></i>
+                Order History
+            </h4>
+
+            <span class="badge bg-primary">
+                {{ orders|length }} Orders
+            </span>
+
+        </div>
+
+
+        {% for order in orders %}
+
+        <div class="order-card">
+
+            <!-- ORDER HEADER -->
+
+            <div class="order-heading">
+
+                <div>
+
+                    <p class="order-label">Order ID</p>
+
+                    <div class="order-id">
+                        #{{ order.order_id }}
+                    </div>
+
+                </div>
+
+
+                <div>
+
+                    <p class="order-label">Order Date</p>
+
+                    <strong>
+                        {{ order.created_at|date:"d M Y, h:i A" }}
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <p class="order-label">Payment Method</p>
+
+                    <strong>
+                        {{ order.get_payment_method_display }}
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <p class="order-label">Payment Status</p>
+
+                    <span class="status status-{{ order.payment_status }}">
+                        {{ order.get_payment_status_display }}
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- PURCHASED BOOKS -->
+
+            <div class="mt-3">
+
+                <h6 class="fw-bold mb-2">
+                    Purchased Books
+                </h6>
+
+
+                {% for item in order.orderitems_set.all %}
+
+                <div class="book-item">
+
+                    <!-- Book Image -->
+
+                    {% if item.product.product_image %}
+
+                        <img src="{{ item.product.product_image.url }}"
+                             class="book-image"
+                             alt="{{ item.product.product_name }}">
+
+                    {% else %}
+
+                        <div class="book-image d-flex align-items-center justify-content-center">
+                            <i class="bi bi-book fs-2 text-secondary"></i>
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- Book Information -->
+
+                    <div class="flex-grow-1">
+
+                        <h6 class="fw-bold mb-1">
+                            {{ item.product.product_name }}
+                        </h6>
+
+                        <p class="text-muted mb-1 small">
+                            Price: ₹{{ item.price|floatformat:2 }}
+                        </p>
+
+                        <p class="text-muted mb-0 small">
+                            Quantity: {{ item.quantity }}
+                        </p>
+
+                    </div>
+
+
+                    <!-- Subtotal -->
+
+                    <div class="text-end">
+
+                        <strong>
+                            ₹{{ item.subtotal|floatformat:2 }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+                {% empty %}
+
+                    <p class="text-muted">
+                        No order items found.
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- ORDER FOOTER -->
+
+            <div class="row align-items-center mt-3 g-3">
+
+                <div class="col-md-4">
+
+                    <p class="order-label">
+                        Order Status
+                    </p>
+
+                    <span class="status status-{{ order.order_status }}">
+                        {{ order.get_order_status_display }}
+                    </span>
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <p class="order-label">
+                        Tracking Number
+                    </p>
+
+                    <strong>
+                        {{ order.tracking_no|default:"Not available" }}
+                    </strong>
+
+                </div>
+
+
+                <div class="col-md-4 text-md-end">
+
+                    <p class="order-label">
+                        Total Amount
+                    </p>
+
+                    <div class="order-total">
+                        ₹{{ order.payment_amount|floatformat:2 }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="text-end mt-3">
+
+                <a href="{% url 'order_details' order.order_id %}"
+                   class="btn btn-outline-primary btn-sm">
+
+                    View Order Details
+                    <i class="bi bi-arrow-right ms-1"></i>
+
+                </a>
+
+            </div>
+
+        </div>
+
+        {% empty %}
+
+            <div class="empty-orders">
+
+                <i class="bi bi-bag-x display-1 text-secondary"></i>
+
+                <h4 class="fw-bold mt-3">
+                    No Orders Yet!
+                </h4>
+
+                <p class="text-muted">
+                    You haven't purchased any books yet.
+                </p>
+
+                <a href="{% url 'shop' %}"
+                   class="btn btn-primary px-4">
+
+                    Continue Shopping
+
+                </a>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+</section>
+
+{% endblock %}
+
+
+
+
+{% comment %} 
+{% extends 'base.html' %}
+
+{% block title %}My Orders - Bookly{% endblock %}
+
+{% block body %}
+
+<style>
+    .orders-section {
+        background: #f8fafc;
+        min-height: 75vh;
+        padding: 50px 0;
+    }
+
+    .orders-card {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.04);
+        margin-bottom: 20px;
+    }
+
+    .order-item {
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 15px;
+    }
+
+    .order-label {
+        color: #64748b;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+
+    .order-value {
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .order-number {
+        color: #4f46e5;
+        font-weight: 700;
+    }
+
+    .empty-orders {
+        padding: 60px 20px;
+        text-align: center;
+    }
+</style>
+
+<section class="orders-section">
+
+    <div class="container">
+
+        <!-- Heading -->
+
+        <div class="mb-4">
+            <h2 class="fw-bold">My Orders</h2>
+
+            <p class="text-muted">
+                View your previous orders and purchase history.
+            </p>
+        </div>
+
+
+        <!-- Messages -->
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+
+        <div class="orders-card">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+
+                <h4 class="fw-bold mb-0">
+                    <i class="bi bi-bag-check me-2"></i>
+                    Order History
+                </h4>
+
+                <span class="badge bg-primary">
+                    {{ orders|length }} Orders
+                </span>
+
+            </div>
+
+
+            {% for order in orders %}
+
+                <div class="order-item">
+
+                    <div class="row g-3 align-items-center">
+
+                        <!-- Order ID -->
+
+                        <div class="col-md-3">
+
+                            <p class="order-label">
+                                Order ID
+                            </p>
+
+                            <h6 class="order-number">
+                                #{{ order.id }}
+                            </h6>
+
+                        </div>
+
+
+                        <!-- Order Date -->
+
+                        <div class="col-md-3">
+
+                            <p class="order-label">
+                                Order Date
+                            </p>
+
+                            <h6 class="order-value">
+                                {{ order.created_at|date:"d M Y" }}
+                            </h6>
+
+                        </div>
+
+
+                        <!-- Total Amount -->
+
+                        <div class="col-md-3">
+
+                            <p class="order-label">
+                                Total Amount
+                            </p>
+
+                            <h6 class="order-value text-success">
+                                ₹{{ order.total_price|floatformat:2 }}
+                            </h6>
+
+                        </div>
+
+
+                        <!-- Order Status -->
+
+                        <div class="col-md-3">
+
+                            <p class="order-label">
+                                Order Reference
+                            </p>
+
+                            <span class="badge bg-light text-dark border">
+                                #{{ order.id }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% empty %}
+
+                <div class="empty-orders">
+
+                    <i class="bi bi-bag-x display-1 text-secondary"></i>
+
+                    <h4 class="fw-bold mt-3">
+                        No Orders Yet!
+                    </h4>
+
+                    <p class="text-muted">
+                        You haven't placed any orders yet.
+                        Start shopping and discover your next favourite book.
+                    </p>
+
+                    <a href="{% url 'shop' %}"
+                       class="btn btn-primary px-4">
+
+                        <i class="bi bi-shop me-2"></i>
+                        Continue Shopping
+
+                    </a>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+        <a href="{% url 'my_profile' %}"
+           class="btn btn-outline-secondary">
+
+            <i class="bi bi-arrow-left me-2"></i>
+            Back to Profile
+
+        </a>
+
+    </div>
+
+</section>
+
+{% endblock %} {% endcomment %}

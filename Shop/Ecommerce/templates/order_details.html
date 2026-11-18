@@ -1,0 +1,285 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Order Details - Bookly{% endblock %}
+
+{% block body %}
+
+<style>
+    .details-section {
+        background: #f8fafc;
+        min-height: 80vh;
+        padding: 45px 0;
+    }
+
+    .details-card {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 22px;
+    }
+
+    .detail-label {
+        font-size: 13px;
+        color: #64748b;
+        margin-bottom: 5px;
+    }
+
+    .detail-value {
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .detail-book {
+        display: flex;
+        gap: 18px;
+        align-items: center;
+        padding: 18px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .detail-book img {
+        width: 75px;
+        height: 100px;
+        object-fit: contain;
+    }
+
+    .detail-status {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        background: #dcfce7;
+        color: #15803d;
+    }
+</style>
+
+
+<section class="details-section">
+
+<div class="container">
+
+    <div class="mb-4">
+
+        <h2 class="fw-bold">
+            Order Details
+        </h2>
+
+        <p class="text-muted">
+            Complete information about your purchase.
+        </p>
+
+    </div>
+
+
+    <!-- ORDER INFORMATION -->
+
+    <div class="details-card">
+
+        <h5 class="fw-bold mb-4">
+            Order Information
+        </h5>
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+
+                <p class="detail-label">Order ID</p>
+
+                <p class="detail-value">
+                    #{{ order.order_id }}
+                </p>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <p class="detail-label">Order Date</p>
+
+                <p class="detail-value">
+                    {{ order.created_at|date:"d M Y, h:i A" }}
+                </p>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <p class="detail-label">Tracking Number</p>
+
+                <p class="detail-value">
+                    {{ order.tracking_no|default:"Not available" }}
+                </p>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <p class="detail-label">Payment Method</p>
+
+                <p class="detail-value">
+                    {{ order.get_payment_method_display }}
+                </p>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <p class="detail-label">Payment Status</p>
+
+                <span class="detail-status">
+                    {{ order.get_payment_status_display }}
+                </span>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <p class="detail-label">Order Status</p>
+
+                <span class="detail-status">
+                    {{ order.get_order_status_display }}
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ORDERED PRODUCTS -->
+
+    <div class="details-card">
+
+        <h5 class="fw-bold mb-3">
+            <i class="bi bi-book me-2"></i>
+            Purchased Books
+        </h5>
+
+
+        {% for item in order_items %}
+
+            <div class="detail-book">
+
+                {% if item.product.product_image %}
+
+                    <img src="{{ item.product.product_image.url }}"
+                         alt="{{ item.product.product_name }}">
+
+                {% else %}
+
+                    <div style="width:75px;height:100px;background:#f1f5f9;"
+                         class="d-flex align-items-center justify-content-center">
+
+                        <i class="bi bi-book fs-2"></i>
+
+                    </div>
+
+                {% endif %}
+
+
+                <div class="flex-grow-1">
+
+                    <h6 class="fw-bold">
+                        {{ item.product.product_name }}
+                    </h6>
+
+                    <p class="text-muted mb-1">
+                        Price: ₹{{ item.price|floatformat:2 }}
+                    </p>
+
+                    <p class="text-muted mb-0">
+                        Quantity: {{ item.quantity }}
+                    </p>
+
+                </div>
+
+
+                <strong>
+                    ₹{{ item.subtotal|floatformat:2 }}
+                </strong>
+
+            </div>
+
+        {% empty %}
+
+            <p class="text-muted">
+                No products found for this order.
+            </p>
+
+        {% endfor %}
+
+
+        <div class="d-flex justify-content-between align-items-center mt-4">
+
+            <h5 class="fw-bold">
+                Total Amount
+            </h5>
+
+            <h4 class="fw-bold text-success">
+                ₹{{ order.payment_amount|floatformat:2 }}
+            </h4>
+
+        </div>
+
+    </div>
+
+
+    <!-- DELIVERY ADDRESS -->
+
+    <div class="details-card">
+
+        <h5 class="fw-bold mb-3">
+            <i class="bi bi-geo-alt me-2"></i>
+            Delivery Address
+        </h5>
+
+        {% with delivery=order.shipping_address|default:order.address %}
+
+            <h6 class="fw-bold">
+                {{ delivery.full_name }}
+            </h6>
+
+            <p class="text-muted mb-1">
+                {{ delivery.mobile }}
+            </p>
+
+            <p class="text-muted mb-0">
+
+                {{ delivery.address_line }}<br>
+
+                {% if delivery.landmark %}
+                    {{ delivery.landmark }}<br>
+                {% endif %}
+
+                {{ delivery.city }},
+                {{ delivery.state }} - {{ delivery.pin_code }}<br>
+
+                {{ delivery.country }}
+
+            </p>
+
+        {% endwith %}
+
+    </div>
+
+
+    <a href="{% url 'my_orders' %}"
+       class="btn btn-outline-primary">
+
+        <i class="bi bi-arrow-left me-2"></i>
+        Back to My Orders
+
+    </a>
+
+</div>
+
+</section>
+
+{% endblock %}

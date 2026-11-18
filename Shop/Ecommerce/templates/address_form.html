@@ -1,0 +1,110 @@
+
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - Bookly{% endblock %}
+
+{% block body %}
+
+<style>
+    .address-section {
+        background: #f8fafc;
+        padding: 50px 15px;
+        min-height: 80vh;
+    }
+
+    .address-form-card {
+        max-width: 750px;
+        margin: auto;
+        background: white;
+        padding: 35px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+</style>
+
+<section class="address-section">
+
+    <div class="address-form-card">
+
+        <h3 class="fw-bold mb-2">
+            {{ title }}
+        </h3>
+
+        <p class="text-muted mb-4">
+            Enter your delivery address details.
+        </p>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="row g-3">
+
+                {% for field in form %}
+
+                    <div class="col-md-6">
+
+                        {% if field.name == 'is_default' %}
+
+                            <div class="form-check mt-4">
+
+                                {{ field }}
+
+                                <label class="form-check-label">
+                                    Set as default address
+                                </label>
+
+                            </div>
+
+                        {% else %}
+
+                            <label class="form-label fw-semibold">
+                                {{ field.label }}
+                            </label>
+
+                            {{ field }}
+
+                        {% endif %}
+
+
+                        {% for error in field.errors %}
+                            <small class="text-danger d-block">
+                                {{ error }}
+                            </small>
+                        {% endfor %}
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <div class="d-flex gap-2 mt-4">
+
+                <button type="submit" class="btn btn-primary px-4">
+                    Save Address
+                </button>
+
+                <a href="{% url 'my_profile' %}"
+                   class="btn btn-light px-4">
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Confirmation - #{{ order_details.order_id }}</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+            },
+            colors: {
+              brand: {
+                50: "#ecfdf5",
+                100: "#d1fae5",
+                500: "#10b981",
+                600: "#059669",
+                700: "#047857",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      /* Smooth pulse animation for success check mark wrapper */
+      @keyframes popIn {
+        0% {
+          transform: scale(0.8);
+          opacity: 0;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .animate-pop {
+        animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      }
+
+      /* Print Styling Optimizations */
+      @media print {
+        body {
+          background: #ffffff !important;
+          color: #000000 !important;
+          padding: 0 !important;
+        }
+        .no-print {
+          display: none !important;
+        }
+        .print-shadow-none {
+          box-shadow: none !important;
+          border: 1px solid #e5e7eb !important;
+        }
+        .print-container {
+          max-width: 100% !important;
+          width: 100% !important;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gradient-to-br from-slate-50 via-emerald-50/20 to-slate-100 min-h-screen font-sans text-slate-800 antialiased selection:bg-brand-500 selection:text-white py-8 md:py-12 px-4 sm:px-6"
+  >
+    <div class="max-w-4xl mx-auto print-container">
+      <!-- Top Action Navigation Bar (Hidden on print) -->
+      <div
+        class="no-print mb-6 flex flex-wrap items-center justify-between gap-4"
+      >
+        <a
+          href="/"
+          class="inline-flex items-center text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors group"
+        >
+          <i
+            class="fa-solid fa-arrow-left mr-2 transition-transform group-hover:-translate-x-1"
+          ></i>
+          Back to Shopping
+        </a>
+        <div class="flex items-center space-x-3">
+          <button
+            onclick="window.print()"
+            class="inline-flex items-center justify-center px-4 py-2 bg-white hover:bg-slate-50 border border-slate-200 shadow-sm text-sm font-medium rounded-xl text-slate-700 transition-all hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1"
+          >
+            <i class="fa-solid fa-print mr-2 text-slate-500"></i> Print Invoice
+          </button>
+          <a
+            href="#track-order"
+            class="inline-flex items-center justify-center px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-xl shadow-sm shadow-brand-500/20 transition-all focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1"
+          >
+            <i class="fa-solid fa-truck-fast mr-2"></i> Track Order
+          </a>
+        </div>
+      </div>
+
+      <!-- Main Receipt Card -->
+      <div
+        class="bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 overflow-hidden print-shadow-none"
+      >
+        <!-- Header Banner & Success Announcement -->
+        <div
+          class="bg-gradient-to-b from-emerald-50/80 to-white pt-10 pb-8 px-6 sm:px-10 text-center border-b border-slate-100"
+        >
+          <div
+            class="animate-pop inline-flex items-center justify-center w-20 h-20 bg-brand-100 text-brand-600 rounded-full shadow-inner mb-4 ring-8 ring-brand-50"
+          >
+            <i class="fa-solid fa-check text-4xl"></i>
+          </div>
+          <h1
+            class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mb-2"
+          >
+            Order Confirmed!
+          </h1>
+          <p class="text-slate-600 max-w-md mx-auto text-sm sm:text-base">
+            Thank you for your purchase. We've received your order and are
+            preparing it for shipment.
+          </p>
+          <div class="mt-3 text-xs sm:text-sm text-slate-500">
+            Confirmation email sent to
+            <span class="font-medium text-slate-700">user@example.com</span>
+          </div>
+        </div>
+
+        <div class="p-6 sm:p-10 space-y-8">
+          <!-- Key Meta Highlights Grid -->
+          <div
+            class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 sm:p-6 bg-slate-50/80 rounded-2xl border border-slate-100"
+          >
+            <div>
+              <span
+                class="text-xs uppercase tracking-wider font-semibold text-slate-400 block mb-1"
+                >Order ID</span
+              >
+              <span
+                class="text-sm sm:text-base font-bold text-slate-900 break-all"
+                >#{{ order_details.order_id }}</span
+              >
+            </div>
+            <div>
+              <span
+                class="text-xs uppercase tracking-wider font-semibold text-slate-400 block mb-1"
+                >Order Date</span
+              >
+              <span class="text-sm sm:text-base font-semibold text-slate-800"
+                >{{ order_details.created_at }}</span
+              >
+            </div>
+            <div>
+              <span
+                class="text-xs uppercase tracking-wider font-semibold text-slate-400 block mb-1"
+                >Payment Method</span
+              >
+              <span
+                class="text-sm sm:text-base font-semibold text-slate-800 capitalize"
+                >{{ order_details.payment_method }}</span
+              >
+            </div>
+            <div>
+              <span
+                class="text-xs uppercase tracking-wider font-semibold text-slate-400 block mb-1"
+                >Status</span
+              >
+              <span
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 capitalize"
+              >
+                <span
+                  class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"
+                ></span>
+                {{ order_details.payment_status }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Order Progress Tracker -->
+          <div id="track-order" class="pt-2">
+            <h3
+              class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-6"
+            >
+              Order Status Timeline
+            </h3>
+            <div class="relative">
+              <!-- Timeline Bar -->
+              <div
+                class="hidden sm:block absolute top-1/2 left-0 w-full h-1 bg-slate-100 -translate-y-1/2 z-0"
+              ></div>
+              <div
+                class="hidden sm:block absolute top-1/2 left-0 w-1/3 h-1 bg-brand-500 -translate-y-1/2 z-0"
+              ></div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-4 gap-6 relative z-10">
+                <!-- Step 1 -->
+                <div
+                  class="flex sm:flex-col items-center text-left sm:text-center space-x-3 sm:space-x-0"
+                >
+                  <div
+                    class="w-10 h-10 rounded-full bg-brand-600 text-white flex items-center justify-center font-semibold text-sm shadow-md ring-4 ring-white"
+                  >
+                    <i class="fa-solid fa-receipt text-xs"></i>
+                  </div>
+                  <div class="sm:mt-3">
+                    <p class="text-sm font-semibold text-slate-900">
+                      Order Placed
+                    </p>
+                    <p class="text-xs text-slate-400">Confirmed</p>
+                  </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div
+                  class="flex sm:flex-col items-center text-left sm:text-center space-x-3 sm:space-x-0"
+                >
+                  <div
+                    class="w-10 h-10 rounded-full bg-brand-500 text-white flex items-center justify-center font-semibold text-sm shadow-md ring-4 ring-white"
+                  >
+                    <i class="fa-solid fa-gear text-xs animate-spin-slow"></i>
+                  </div>
+                  <div class="sm:mt-3">
+                    <p class="text-sm font-semibold text-brand-600">
+                      Processing
+                    </p>
+                    <p class="text-xs text-slate-400">In Progress</p>
+                  </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div
+                  class="flex sm:flex-col items-center text-left sm:text-center space-x-3 sm:space-x-0"
+                >
+                  <div
+                    class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 border border-slate-200 flex items-center justify-center font-semibold text-sm ring-4 ring-white"
+                  >
+                    <i class="fa-solid fa-box text-xs"></i>
+                  </div>
+                  <div class="sm:mt-3">
+                    <p class="text-sm font-medium text-slate-400">Shipped</p>
+                    <p class="text-xs text-slate-400">Pending</p>
+                  </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div
+                  class="flex sm:flex-col items-center text-left sm:text-center space-x-3 sm:space-x-0"
+                >
+                  <div
+                    class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 border border-slate-200 flex items-center justify-center font-semibold text-sm ring-4 ring-white"
+                  >
+                    <i class="fa-solid fa-house-chimney text-xs"></i>
+                  </div>
+                  <div class="sm:mt-3">
+                    <p class="text-sm font-medium text-slate-400">Delivered</p>
+                    <p class="text-xs text-slate-400">Pending</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="border-t border-slate-100 pt-8"></div>
+
+          <!-- Technical Transaction & Payment Verification Box -->
+          <div
+            class="bg-slate-50/60 rounded-2xl p-5 border border-slate-200/60 text-xs text-slate-600 space-y-3"
+          >
+            <div
+              class="flex items-center justify-between pb-2 border-b border-slate-200/60"
+            >
+              <span class="font-bold uppercase tracking-wider text-slate-400"
+                >Razorpay Transaction Details</span
+              >
+              <span class="text-slate-400"
+                ><i class="fa-solid fa-shield-halved text-brand-500 mr-1"></i>
+                Verified Secure</span
+              >
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+              <div
+                class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-200/80"
+              >
+                <span class="text-slate-500 font-medium">Payment ID:</span>
+                <span class="font-mono text-slate-800 font-medium select-all"
+                  >{{ order_details.razorpay_payment_id }}</span
+                >
+              </div>
+
+              <div
+                class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-200/80"
+              >
+                <span class="text-slate-500 font-medium"
+                  >Payment Signature:</span
+                >
+                <details class="cursor-pointer">
+                  <summary
+                    class="font-mono text-brand-600 hover:text-brand-700 font-medium list-none flex items-center"
+                  >
+                    <span>View Signature</span>
+                    <i class="fa-solid fa-chevron-down ml-1 text-[10px]"></i>
+                  </summary>
+                  <div
+                    class="mt-2 p-2 bg-slate-900 text-slate-200 rounded font-mono text-[10px] break-all max-w-xs leading-relaxed"
+                  >
+                    {{ order_details.razorpay_signature }}
+                  </div>
+                </details>
+              </div>
+            </div>
+          </div>
+
+         
+
+          <!-- Financial Totals Summary -->
+          <div class="bg-slate-50/80 rounded-2xl p-6 border border-slate-100">
+            <h4
+              class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4"
+            >
+              Payment Breakdown
+            </h4>
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between text-slate-600">
+                <span>Subtotal</span>
+                <span class="font-medium text-slate-800"
+                  >₹{{ order_details.payment_amount }}</span
+                >
+              </div>
+              <div class="flex justify-between text-slate-600">
+                <span>Shipping & Handling</span>
+                <span class="font-medium text-emerald-600">Free</span>
+              </div>
+              <div class="flex justify-between text-slate-600">
+                <span>Estimated Tax</span>
+                <span class="font-medium text-slate-800">₹0.00</span>
+              </div>
+              <div
+                class="border-t border-slate-200 pt-3 mt-3 flex justify-between items-center"
+              >
+                <div>
+                  <span class="text-base font-bold text-slate-900 block"
+                    >Total Amount Paid</span
+                  >
+                  <span class="text-xs text-slate-400"
+                    >Includes all taxes and charges</span
+                  >
+                </div>
+                <span class="text-2xl font-extrabold text-brand-600"
+                  >₹{{ order_details.payment_amount }}</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Section inside Card -->
+        <div
+          class="bg-slate-50 px-6 sm:px-10 py-6 border-t border-slate-100 text-center sm:flex sm:justify-between sm:items-center"
+        >
+          <p class="text-xs text-slate-500 mb-4 sm:mb-0">
+            Need help with your order?
+            <a href="#" class="text-brand-600 hover:underline font-medium"
+              >Contact Support</a
+            >
+          </p>
+          <div class="no-print flex justify-center space-x-3">
+            <a
+              href="/"
+              class="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium rounded-xl shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1"
+            >
+              Continue Shopping
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Copyright Footer -->
+      <div class="text-center mt-8 text-xs text-slate-400">
+        &copy; 2026 Your Store Name. All rights reserved.
+      </div>
+    </div>
+  </body>
+</html>
+

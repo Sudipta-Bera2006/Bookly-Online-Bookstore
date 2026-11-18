@@ -1,0 +1,934 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - Bookly{% endblock %}
+
+{% block body %}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #222;
+            background: #fff;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* Hero Section */
+
+        .about-hero {
+            background: #fff8f1;
+            padding: 80px 0;
+        }
+
+        .about-hero h1 {
+            font-size: 46px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 20px;
+        }
+
+        .about-hero h1 span {
+            color: #e67e22;
+        }
+
+        .about-hero p {
+            color: #666;
+            font-size: 15px;
+            line-height: 1.9;
+            margin-bottom: 30px;
+        }
+
+        .about-label {
+            display: inline-block;
+            color: #e67e22;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .about-hero img {
+            width: 100%;
+            height: 420px;
+            object-fit: cover;
+            border-radius: 15px;
+        }
+
+        .about-btn {
+            display: inline-block;
+            background: #e67e22;
+            color: #fff;
+            padding: 13px 28px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .about-btn:hover {
+            background: #c96b16;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        /* About Story */
+
+        .story-section {
+            padding: 80px 0;
+        }
+
+        .story-image img {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+            border-radius: 15px;
+        }
+
+        .story-content {
+            padding: 20px 30px;
+        }
+
+        .story-content h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .story-content h2 span {
+            color: #e67e22;
+        }
+
+        .story-content p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.9;
+            margin-bottom: 18px;
+        }
+
+        /* Mission and Vision */
+
+        .mission-section {
+            padding: 80px 0;
+            background: #fafafa;
+        }
+
+        .section-heading {
+            text-align: center;
+            margin-bottom: 45px;
+        }
+
+        .section-heading span {
+            color: #e67e22;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .section-heading h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 12px 0;
+        }
+
+        .section-heading p {
+            color: #777;
+        }
+
+        .mission-card {
+            background: #fff;
+            padding: 35px 25px;
+            border-radius: 12px;
+            text-align: center;
+            height: 100%;
+            border: 1px solid #eee;
+            transition: 0.3s;
+        }
+
+        .mission-card:hover {
+            transform: translateY(-8px);
+            border-color: #e67e22;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .mission-icon {
+            width: 70px;
+            height: 70px;
+            background: #fff1e3;
+            color: #e67e22;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin: 0 auto 20px;
+        }
+
+        .mission-card h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .mission-card p {
+            color: #777;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        /* Statistics */
+
+        .stats-section {
+            padding: 70px 0;
+            background: #e67e22;
+            color: #fff;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .stat-box h2 {
+            font-size: 38px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .stat-box p {
+            font-size: 14px;
+            margin: 0;
+        }
+
+        /* Why Choose Us */
+
+        .why-section {
+            padding: 80px 0;
+        }
+
+        .why-content h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .why-content h2 span {
+            color: #e67e22;
+        }
+
+        .why-content > p {
+            color: #777;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .feature-icon {
+            min-width: 45px;
+            height: 45px;
+            background: #fff1e3;
+            color: #e67e22;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .feature-item h4 {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 7px;
+        }
+
+        .feature-item p {
+            color: #777;
+            font-size: 13px;
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        .why-image img {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+            border-radius: 15px;
+        }
+
+        /* Team Section */
+
+        .team-section {
+            padding: 80px 0;
+            background: #fafafa;
+        }
+
+        .team-card {
+            background: #fff;
+            text-align: center;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #eee;
+            transition: 0.3s;
+        }
+
+        .team-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .team-card img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+        }
+
+        .team-info {
+            padding: 22px;
+        }
+
+        .team-info h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .team-info p {
+            color: #e67e22;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        /* FAQ */
+
+        .faq-section {
+            padding: 80px 0;
+        }
+
+        .accordion-item {
+            border: 1px solid #eee;
+            margin-bottom: 12px;
+            border-radius: 8px !important;
+            overflow: hidden;
+        }
+
+        .accordion-button {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            padding: 20px;
+            background: #fff;
+        }
+
+        .accordion-button:not(.collapsed) {
+            background: #fff8f1;
+            color: #e67e22;
+            box-shadow: none;
+        }
+
+        .accordion-button:focus {
+            box-shadow: none;
+            border-color: #e67e22;
+        }
+
+        .accordion-body {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        /* Contact CTA */
+
+        .contact-section {
+            padding: 80px 0;
+            background: #fff8f1;
+            text-align: center;
+        }
+
+        .contact-section h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .contact-section p {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        /* Responsive */
+
+        @media (max-width: 991px) {
+            .about-hero {
+                text-align: center;
+            }
+
+            .about-hero h1 {
+                font-size: 38px;
+            }
+
+            .about-hero img {
+                margin-top: 40px;
+                height: 350px;
+            }
+
+            .story-content {
+                padding: 30px 0 0;
+            }
+
+            .why-image {
+                margin-top: 40px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .about-hero,
+            .story-section,
+            .mission-section,
+            .why-section,
+            .team-section,
+            .faq-section,
+            .contact-section {
+                padding: 50px 0;
+            }
+
+            .about-hero h1 {
+                font-size: 30px;
+            }
+
+            .story-content h2,
+            .section-heading h2,
+            .why-content h2,
+            .contact-section h2 {
+                font-size: 25px;
+            }
+
+            .about-hero img,
+            .story-image img,
+            .why-image img {
+                height: 280px;
+            }
+
+            .stat-box h2 {
+                font-size: 30px;
+            }
+        }
+    </style>
+
+
+    <!-- About Hero Section -->
+    <section class="about-hero">
+        <div class="container">
+            <div class="row align-items-center">
+
+                <div class="col-lg-6">
+
+                    <span class="about-label">About Bookly</span>
+
+                    <h1>
+                        Your Gateway to
+                        <span>Knowledge and Imagination</span>
+                    </h1>
+
+                    <p>
+                        Welcome to Bookly, your trusted online bookstore.
+                        We believe every book has the power to inspire,
+                        educate, and transform lives.
+                    </p>
+
+                    <p>
+                        Our goal is to make reading enjoyable and
+                        accessible by bringing your favorite books
+                        right to your doorstep.
+                    </p>
+
+                    <a href="{% url 'shop' %}" class="about-btn">
+                        Explore Our Collection
+                    </a>
+
+                </div>
+
+                <div class="col-lg-6">
+                    <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66"
+                         alt="Bookly bookstore">
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Our Story Section -->
+    <section class="story-section">
+        <div class="container">
+            <div class="row align-items-center">
+
+                <div class="col-lg-6 story-image">
+                    <img src="https://images.unsplash.com/photo-1506880018603-83d5b814b5a6"
+                         alt="Reading books">
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="story-content">
+
+                        <span class="about-label">Our Story</span>
+
+                        <h2>
+                            A Passion for
+                            <span>Books and Reading</span>
+                        </h2>
+
+                        <p>
+                            Bookly was created with a simple idea:
+                            make it easier for everyone to discover
+                            and enjoy great books.
+                        </p>
+
+                        <p>
+                            From exciting fiction and educational
+                            resources to technology and business books,
+                            we bring together a diverse collection
+                            for readers of all ages.
+                        </p>
+
+                        <p>
+                            We are committed to providing a convenient
+                            shopping experience, quality books, and
+                            excellent customer service.
+                        </p>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Mission and Vision -->
+    <section class="mission-section">
+        <div class="container">
+
+            <div class="section-heading">
+                <span>What Drives Us</span>
+                <h2>Our Mission and Vision</h2>
+                <p>Making the world a better place through reading.</p>
+            </div>
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+                    <div class="mission-card">
+
+                        <div class="mission-icon">🎯</div>
+
+                        <h3>Our Mission</h3>
+
+                        <p>
+                            To provide readers with easy access to
+                            quality books, affordable prices, and a
+                            convenient online shopping experience.
+                            We want to encourage people to develop
+                            a lifelong love of reading.
+                        </p>
+
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="mission-card">
+
+                        <div class="mission-icon">🌟</div>
+
+                        <h3>Our Vision</h3>
+
+                        <p>
+                            To become a trusted destination for
+                            book lovers around the world and build
+                            a community where knowledge, creativity,
+                            and imagination continue to grow.
+                        </p>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Statistics Section -->
+    <section class="stats-section">
+        <div class="container">
+
+            <div class="row g-4">
+
+                <div class="col-6 col-lg-3">
+                    <div class="stat-box">
+                        <h2 class="counter" data-target="10000">0</h2>
+                        <p>Books Available</p>
+                    </div>
+                </div>
+
+                <div class="col-6 col-lg-3">
+                    <div class="stat-box">
+                        <h2 class="counter" data-target="5000">0</h2>
+                        <p>Happy Customers</p>
+                    </div>
+                </div>
+
+                <div class="col-6 col-lg-3">
+                    <div class="stat-box">
+                        <h2 class="counter" data-target="500">0</h2>
+                        <p>Authors</p>
+                    </div>
+                </div>
+
+                <div class="col-6 col-lg-3">
+                    <div class="stat-box">
+                        <h2 class="counter" data-target="20">0</h2>
+                        <p>Book Categories</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- Why Choose Us -->
+    <section class="why-section">
+        <div class="container">
+            <div class="row align-items-center">
+
+                <div class="col-lg-6">
+                    <div class="why-content">
+
+                        <span class="about-label">Why Choose Bookly?</span>
+
+                        <h2>
+                            Making Your
+                            <span>Reading Journey Better</span>
+                        </h2>
+
+                        <p>
+                            We focus on providing a simple,
+                            enjoyable, and reliable online
+                            bookstore experience.
+                        </p>
+
+                        <div class="feature-item">
+                            <div class="feature-icon">📚</div>
+                            <div>
+                                <h4>Wide Book Collection</h4>
+                                <p>
+                                    Explore books across different
+                                    genres, subjects, and interests.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="feature-item">
+                            <div class="feature-icon">💰</div>
+                            <div>
+                                <h4>Affordable Prices</h4>
+                                <p>
+                                    Find your favorite books at
+                                    prices that fit your budget.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="feature-item">
+                            <div class="feature-icon">🚚</div>
+                            <div>
+                                <h4>Convenient Shopping</h4>
+                                <p>
+                                    Browse and order books online
+                                    from the comfort of your home.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="feature-item">
+                            <div class="feature-icon">❤️</div>
+                            <div>
+                                <h4>Customer Satisfaction</h4>
+                                <p>
+                                    We strive to provide a friendly
+                                    and helpful shopping experience.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-lg-6 why-image">
+                    <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f"
+                         alt="A collection of books">
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Our Team -->
+    <section class="team-section">
+        <div class="container">
+
+            <div class="section-heading">
+                <span>Meet Our Team</span>
+                <h2>The People Behind Bookly</h2>
+                <p>Our team is passionate about books and customer service.</p>
+            </div>
+
+            <div class="row g-4">
+
+                <div class="col-md-4">
+                    <div class="team-card">
+
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e"
+                             alt="Founder">
+
+                        <div class="team-info">
+                            <h4>Bookly Founder</h4>
+                            <p>Founder & CEO</p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="team-card">
+
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb"
+                             alt="Book curator">
+
+                        <div class="team-info">
+                            <h4>Book Curator</h4>
+                            <p>Book Collection Manager</p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="team-card">
+
+                        <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d"
+                             alt="Customer support">
+
+                        <div class="team-info">
+                            <h4>Customer Support</h4>
+                            <p>Customer Service Manager</p>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Frequently Asked Questions -->
+    <section class="faq-section">
+        <div class="container">
+
+            <div class="section-heading">
+                <span>Frequently Asked Questions</span>
+                <h2>Learn More About Bookly</h2>
+                <p>Find answers to some common questions.</p>
+            </div>
+
+            <div class="accordion" id="aboutFAQ">
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#faqOne">
+                            What is Bookly?
+                        </button>
+                    </h2>
+
+                    <div id="faqOne"
+                         class="accordion-collapse collapse show"
+                         data-bs-parent="#aboutFAQ">
+
+                        <div class="accordion-body">
+                            Bookly is an online bookstore where
+                            customers can explore, discover, and
+                            purchase books from different categories.
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#faqTwo">
+                            What types of books are available?
+                        </button>
+                    </h2>
+
+                    <div id="faqTwo"
+                         class="accordion-collapse collapse"
+                         data-bs-parent="#aboutFAQ">
+
+                        <div class="accordion-body">
+                            We offer fiction, education, technology,
+                            business, programming, self-help, and
+                            many other book categories.
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#faqThree">
+                            How can I purchase a book?
+                        </button>
+                    </h2>
+
+                    <div id="faqThree"
+                         class="accordion-collapse collapse"
+                         data-bs-parent="#aboutFAQ">
+
+                        <div class="accordion-body">
+                            Browse our shop, select your favorite
+                            book, add it to your cart, and proceed
+                            to checkout to complete your order.
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#faqFour">
+                            How can I contact Bookly?
+                        </button>
+                    </h2>
+
+                    <div id="faqFour"
+                         class="accordion-collapse collapse"
+                         data-bs-parent="#aboutFAQ">
+
+                        <div class="accordion-body">
+                            You can contact our team through
+                            the contact page of our website
+                            for any questions or assistance.
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Contact Call to Action -->
+    <section class="contact-section">
+        <div class="container">
+
+            <h2>Let's Start Your Reading Journey</h2>
+
+            <p>
+                Discover your next favorite book and enjoy
+                the wonderful world of reading with Bookly.
+            </p>
+
+            <a href="{% url 'shop' %}" class="about-btn">
+                Explore Books
+            </a>
+
+        </div>
+    </section>
+
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+    <!-- Internal JavaScript -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // Animated statistics counter
+            const counters = document.querySelectorAll(".counter");
+
+            const counterObserver = new IntersectionObserver(
+                function (entries, observer) {
+
+                    entries.forEach(function (entry) {
+
+                        if (entry.isIntersecting) {
+
+                            const counter = entry.target;
+                            const target = Number(counter.dataset.target);
+                            const duration = 1500;
+                            const startTime = performance.now();
+
+                            function updateCounter(currentTime) {
+
+                                const progress = Math.min(
+                                    (currentTime - startTime) / duration,
+                                    1
+                                );
+
+                                const currentValue = Math.floor(
+                                    progress * target
+                                );
+
+                                counter.textContent =
+                                    currentValue.toLocaleString("en-IN") + "+";
+
+                                if (progress < 1) {
+                                    requestAnimationFrame(updateCounter);
+                                }
+                            }
+
+                            requestAnimationFrame(updateCounter);
+
+                            observer.unobserve(counter);
+                        }
+                    });
+
+                },
+                {
+                    threshold: 0.5
+                }
+            );
+
+            counters.forEach(function (counter) {
+                counterObserver.observe(counter);
+            });
+
+        });
+    </script>
+
+{% endblock body %}

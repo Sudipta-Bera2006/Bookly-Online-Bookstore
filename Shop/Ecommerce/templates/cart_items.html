@@ -1,0 +1,767 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Cart{% endblock %}
+
+{% block body %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Manrope:wght@400;500;600;700&display=swap');
+
+  /* ---------- Design tokens (scoped to .cartx so nothing leaks into base.html) ---------- */
+  .cartx {
+    --ink: #151a33;
+    --ink-soft: #5b6180;
+    --line: #e4e7f2;
+    --paper: #f4f6fb;
+    --card: #ffffff;
+    --brand: #4338ff;
+    --brand-dark: #2f25d6;
+    --brand-tint: #eceaff;
+    --good: #0f9d6b;
+    --good-tint: #e0f6ee;
+    --bad: #e23b4a;
+    --bad-tint: #fdeaec;
+    --radius-lg: 22px;
+    --radius-md: 14px;
+    --radius-sm: 10px;
+    --shadow: 0 1px 2px rgba(21, 26, 51, .05), 0 12px 32px -16px rgba(21, 26, 51, .18);
+
+    font-family: 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    padding: clamp(1.25rem, 3vw, 3rem) 0 4rem;
+    min-height: 70vh;
+  }
+  .cartx *, .cartx *::before, .cartx *::after { box-sizing: border-box; }
+  .cartx a { text-decoration: none; }
+  .cartx :focus-visible { outline: 3px solid var(--brand); outline-offset: 2px; border-radius: 8px; }
+
+  .cartx .wrap { width: min(1180px, 100% - 2rem); margin-inline: auto; }
+
+  /* ---------- Header ---------- */
+  .cx-head {
+    display: flex; flex-wrap: wrap; align-items: flex-end;
+    justify-content: space-between; gap: 1rem; margin-bottom: 1.75rem;
+  }
+  .cx-title {
+    font-family: 'Bricolage Grotesque', 'Manrope', sans-serif;
+    font-weight: 800; letter-spacing: -.03em;
+    font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1; margin: 0;
+  }
+  .cx-sub { color: var(--ink-soft); margin: .6rem 0 0; font-size: .98rem; }
+  .cx-sub strong { color: var(--ink); }
+
+  .cx-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+    border: 0; cursor: pointer; font: inherit; font-weight: 700;
+    padding: .8rem 1.3rem; border-radius: 999px;
+    transition: transform .15s ease, background-color .15s ease, box-shadow .15s ease;
+  }
+  .cx-btn:active { transform: scale(.97); }
+  .cx-btn-primary { background: var(--brand); color: #fff; box-shadow: 0 10px 24px -10px var(--brand); }
+  .cx-btn-primary:hover { background: var(--brand-dark); color: #fff; }
+  .cx-btn-ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+  .cx-btn-ghost:hover { border-color: var(--ink); color: var(--ink); }
+  .cx-btn-danger-ghost { background: var(--card); color: var(--bad); border: 1.5px solid var(--bad-tint); font-size: .9rem; padding: .6rem 1.1rem; }
+  .cx-btn-danger-ghost:hover { background: var(--bad-tint); color: var(--bad); }
+  .cx-btn-block { width: 100%; padding: 1rem 1.3rem; font-size: 1.02rem; }
+
+  /* ---------- Layout ---------- */
+  .cx-grid { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 1.75rem; align-items: start; }
+
+  /* ---------- Free-shipping progress ---------- */
+  .cx-ship {
+    background: var(--card); border-radius: var(--radius-lg); padding: 1.15rem 1.35rem;
+    box-shadow: var(--shadow); margin-bottom: 1rem;
+  }
+  .cx-ship-text { display: flex; align-items: center; gap: .6rem; font-weight: 600; font-size: .95rem; margin-bottom: .75rem; }
+  .cx-ship-text i { color: var(--brand); font-size: 1.15rem; }
+  .cx-ship.is-free .cx-ship-text i { color: var(--good); }
+  .cx-bar { height: 10px; border-radius: 999px; background: var(--brand-tint); overflow: hidden; }
+  .cx-bar > span {
+    display: block; height: 100%; width: 0; border-radius: inherit;
+    background: linear-gradient(90deg, var(--brand), #7a6bff);
+    transition: width .7s cubic-bezier(.2, .8, .2, 1);
+  }
+  .cx-ship.is-free .cx-bar > span { background: linear-gradient(90deg, var(--good), #3dd6a0); }
+
+  /* ---------- Cart item row ---------- */
+  .cx-list { display: flex; flex-direction: column; gap: 1rem; }
+  .cart-item {
+    position: relative; display: grid;
+    grid-template-columns: 132px minmax(0, 1fr) auto auto;
+    gap: 1.25rem; align-items: center;
+    background: var(--card); border-radius: var(--radius-lg);
+    padding: 1rem 1.35rem 1rem 1rem; box-shadow: var(--shadow);
+    transition: opacity .3s ease, transform .3s ease, box-shadow .2s ease;
+  }
+  .cart-item:hover { box-shadow: 0 1px 2px rgba(21, 26, 51, .05), 0 18px 40px -16px rgba(21, 26, 51, .28); }
+  .cart-item.is-updating { pointer-events: none; opacity: .65; }
+  .cart-item.is-updating::after {
+    content: ''; position: absolute; top: 50%; right: 1.5rem; width: 22px; height: 22px; margin-top: -11px;
+    border: 3px solid var(--brand-tint); border-top-color: var(--brand); border-radius: 50%;
+    animation: cx-spin .7s linear infinite;
+  }
+  .cart-item.is-removing { opacity: 0; transform: translateX(24px) scale(.98); }
+
+  .ci-media { position: relative; display: block; }
+  .ci-media img {
+    width: 132px; height: 132px; object-fit: cover; display: block;
+    border-radius: var(--radius-md); background: var(--paper);
+  }
+  .ci-save {
+    position: absolute; top: 8px; left: 8px;
+    background: var(--good); color: #fff; font-size: .72rem; font-weight: 700;
+    padding: .22rem .55rem; border-radius: 999px;
+  }
+
+  .ci-info { min-width: 0; }
+  .ci-name {
+    display: block; color: var(--ink); font-weight: 700; font-size: 1.08rem;
+    line-height: 1.25; margin-bottom: .3rem;
+    overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  }
+  .ci-name:hover { color: var(--brand); }
+  .ci-desc { color: var(--ink-soft); font-size: .88rem; line-height: 1.5; margin: 0 0 .6rem; }
+  .ci-meta { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; }
+  .ci-rating { display: inline-flex; align-items: center; gap: .3rem; font-size: .82rem; color: var(--ink-soft); }
+  .ci-rating i { color: #f5a400; }
+  .ci-price { display: inline-flex; align-items: baseline; gap: .5rem; }
+  .ci-price b { font-size: 1.1rem; color: var(--ink); }
+  .ci-price s { color: #9aa0bd; font-size: .85rem; }
+
+  /* Quantity stepper */
+  .qty-form { margin: 0; }
+  .qty {
+    display: inline-flex; align-items: center;
+    background: var(--paper); border-radius: 999px; padding: 4px;
+  }
+  .qty button {
+    width: 36px; height: 36px; border: 0; border-radius: 50%;
+    background: var(--card); color: var(--ink); font-size: 1.15rem; line-height: 1;
+    display: grid; place-items: center; cursor: pointer;
+    box-shadow: 0 1px 3px rgba(21, 26, 51, .12);
+    transition: background-color .15s ease, color .15s ease, transform .1s ease;
+  }
+  .qty button:hover:not(:disabled) { background: var(--brand); color: #fff; }
+  .qty button:active:not(:disabled) { transform: scale(.9); }
+  .qty button:disabled { opacity: .35; cursor: not-allowed; box-shadow: none; }
+  .qty input {
+    width: 46px; border: 0; background: transparent; text-align: center;
+    font: inherit; font-weight: 700; color: var(--ink); -moz-appearance: textfield;
+  }
+  .qty input::-webkit-outer-spin-button, .qty input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+  .ci-total { text-align: right; min-width: 108px; }
+  .ci-total small { display: block; color: var(--ink-soft); font-size: .78rem; margin-bottom: .15rem; }
+  .ci-total strong { font-family: 'Bricolage Grotesque', 'Manrope', sans-serif; font-size: 1.35rem; letter-spacing: -.02em; }
+
+  .ci-remove {
+    position: absolute; top: .75rem; right: .75rem; width: 34px; height: 34px;
+    display: grid; place-items: center; border-radius: 50%;
+    background: transparent; color: #9aa0bd; border: 0; font-size: 1rem;
+    transition: background-color .15s ease, color .15s ease;
+  }
+  .ci-remove:hover { background: var(--bad-tint); color: var(--bad); }
+
+  /* ---------- Summary ---------- */
+  .cx-summary {
+    position: sticky; top: 1.25rem;
+    background: var(--card); border-radius: var(--radius-lg);
+    box-shadow: var(--shadow); padding: 1.6rem; overflow: hidden;
+  }
+  .cx-summary h2 {
+    font-family: 'Bricolage Grotesque', 'Manrope', sans-serif;
+    font-size: 1.4rem; font-weight: 800; letter-spacing: -.02em; margin: 0 0 1.2rem;
+  }
+  .cx-row { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: .55rem 0; color: var(--ink-soft); }
+  .cx-row b { color: var(--ink); font-weight: 600; }
+  .cx-row .free { color: var(--good); font-weight: 700; }
+  .cx-sum-total {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-top: 1.5px dashed var(--line); margin-top: .8rem; padding-top: 1.1rem; margin-bottom: 1.3rem;
+  }
+  .cx-sum-total span { font-weight: 700; }
+  .cx-sum-total strong {
+    font-family: 'Bricolage Grotesque', 'Manrope', sans-serif;
+    font-size: 2rem; letter-spacing: -.03em; color: var(--brand);
+  }
+  .cx-trust { display: grid; gap: .7rem; margin-top: 1.4rem; padding-top: 1.2rem; border-top: 1px solid var(--line); }
+  .cx-trust div { display: flex; align-items: center; gap: .7rem; font-size: .86rem; color: var(--ink-soft); }
+  .cx-trust i { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 10px; background: var(--brand-tint); color: var(--brand); }
+  .cx-continue { display: block; text-align: center; margin-top: 1rem; font-weight: 600; font-size: .92rem; color: var(--ink-soft); }
+  .cx-continue:hover { color: var(--brand); }
+
+  /* ---------- Empty state ---------- */
+  .cx-empty {
+    background: var(--card); border-radius: var(--radius-lg); box-shadow: var(--shadow);
+    text-align: center; padding: clamp(2.5rem, 8vw, 5rem) 1.5rem;
+  }
+  .cx-empty-icon {
+    width: 110px; height: 110px; margin: 0 auto 1.5rem; display: grid; place-items: center;
+    border-radius: 50%; background: var(--brand-tint); color: var(--brand); font-size: 3rem;
+  }
+  .cx-empty h2 { font-family: 'Bricolage Grotesque', 'Manrope', sans-serif; font-weight: 800; margin: 0 0 .5rem; }
+  .cx-empty p { color: var(--ink-soft); margin: 0 0 1.5rem; }
+
+  /* ---------- Mobile sticky checkout bar ---------- */
+  .cx-mobilebar { display: none; }
+
+  /* ---------- Confirm dialog ---------- */
+  .cx-dialog {
+    border: 0; border-radius: var(--radius-lg); padding: 0; width: min(420px, 100% - 2rem);
+    box-shadow: 0 30px 80px -20px rgba(21, 26, 51, .5); color: var(--ink);
+    font-family: 'Manrope', system-ui, sans-serif;
+  }
+  .cx-dialog::backdrop { background: rgba(21, 26, 51, .5); backdrop-filter: blur(3px); }
+  .cx-dialog[open] { animation: cx-pop .22s ease; }
+  .cx-dialog-body { padding: 1.75rem 1.75rem 1.25rem; }
+  .cx-dialog-body .ic {
+    width: 52px; height: 52px; border-radius: 16px; background: var(--bad-tint); color: var(--bad);
+    display: grid; place-items: center; font-size: 1.4rem; margin-bottom: 1rem;
+  }
+  .cx-dialog h3 { margin: 0 0 .4rem; font-family: 'Bricolage Grotesque', 'Manrope', sans-serif; font-weight: 800; font-size: 1.3rem; }
+  .cx-dialog p { margin: 0; color: var(--ink-soft); line-height: 1.55; }
+  .cx-dialog-actions { display: flex; gap: .75rem; padding: 0 1.75rem 1.75rem; }
+  .cx-dialog-actions .cx-btn { flex: 1; }
+  .cx-btn-danger { background: var(--bad); color: #fff; }
+  .cx-btn-danger:hover { background: #c42d3b; color: #fff; }
+
+  /* ---------- Toast ---------- */
+  .cx-toast {
+    position: fixed; left: 50%; bottom: 1.5rem; transform: translate(-50%, 30px);
+    background: var(--ink); color: #fff; padding: .8rem 1.2rem; border-radius: 999px;
+    font-weight: 600; font-size: .9rem; opacity: 0; pointer-events: none; z-index: 1080;
+    transition: opacity .25s ease, transform .25s ease;
+  }
+  .cx-toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* ---------- Animations (one entrance only: rows settle in once on page load) ---------- */
+  @keyframes cx-spin { to { transform: rotate(360deg); } }
+  @keyframes cx-pop { from { opacity: 0; transform: scale(.95) translateY(8px); } to { opacity: 1; transform: none; } }
+  @keyframes cx-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .cart-item { animation: cx-in .5s ease both; animation-delay: calc(var(--i, 0) * 70ms); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 991.98px) {
+    .cx-grid { grid-template-columns: 1fr; }
+    .cx-summary { position: static; }
+    .cartx { padding-bottom: 7rem; }
+    .cx-mobilebar {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 1040;
+      background: rgba(255, 255, 255, .92); backdrop-filter: blur(12px);
+      border-top: 1px solid var(--line); padding: .8rem 1rem calc(.8rem + env(safe-area-inset-bottom));
+    }
+    .cx-mobilebar small { display: block; color: var(--ink-soft); font-size: .76rem; }
+    .cx-mobilebar strong { font-family: 'Bricolage Grotesque', 'Manrope', sans-serif; font-size: 1.4rem; letter-spacing: -.02em; }
+    .cx-toast { bottom: 5.5rem; }
+  }
+  @media (max-width: 767.98px) {
+    .cart-item {
+      grid-template-columns: 96px minmax(0, 1fr);
+      grid-template-areas: "media info" "qty total";
+      gap: .9rem 1rem; padding: .9rem;
+    }
+    .ci-media { grid-area: media; }
+    .ci-media img { width: 96px; height: 96px; }
+    .ci-info { grid-area: info; padding-right: 2rem; }
+    .qty-form { grid-area: qty; }
+    .ci-total { grid-area: total; align-self: center; }
+    .ci-desc { display: none; }
+    .ci-total small { display: none; }
+    .cart-item.is-updating::after { top: 1rem; right: 3rem; margin-top: 0; }
+  }
+  @media (max-width: 400px) {
+    .qty button { width: 32px; height: 32px; }
+    .qty input { width: 38px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cartx *, .cartx *::before, .cartx *::after, .cx-dialog, .cx-toast { animation: none !important; transition: none !important; }
+  }
+</style>
+
+<main class="cartx">
+  <div class="wrap">
+
+    <!-- Header -->
+    <header class="cx-head">
+      <div>
+        <h1 class="cx-title">Your cart</h1>
+        <p class="cx-sub"><strong id="headCount">{{ cart_count }}</strong> {% if cart_count == 1 %}product{% else %}products{% endif %} ready for checkout</p>
+      </div>
+      {% if cart_items %}
+      <a href="{% url 'clear_cart' %}" class="cx-btn cx-btn-danger-ghost"
+         data-confirm
+         data-title="Clear your cart?"
+         data-text="All products will be removed from your cart. This can't be undone."
+         data-action="Clear cart">
+        <i class="bi bi-trash3"></i> Clear cart
+      </a>
+      {% endif %}
+    </header>
+
+    {% if cart_items %}
+    <div class="cx-grid">
+
+      <!-- LEFT: items -->
+      <section aria-label="Cart items">
+
+        <!-- Free shipping progress (threshold in rupees, change data-threshold as needed) -->
+        <div class="cx-ship" id="shipBox" data-threshold="999">
+          <div class="cx-ship-text">
+            <i class="bi bi-truck"></i>
+            <span id="shipText">Checking delivery offer…</span>
+          </div>
+          <div class="cx-bar" role="progressbar" aria-label="Progress to free delivery" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="shipProgress">
+            <span id="shipFill"></span>
+          </div>
+        </div>
+
+        <div class="cx-list">
+          {% for item in cart_items %}
+          <article class="cart-item" style="--i: {{ forloop.counter0 }}"
+                   data-price="{{ item.product.product_price }}">
+
+            <!-- Remove -->
+            <a href="{% url 'remove_from_cart' item.product.id %}" class="ci-remove"
+               title="Remove from cart" aria-label="Remove {{ item.product.product_name }} from cart"
+               data-confirm
+               data-title="Remove this item?"
+               data-text="“{{ item.product.product_name|escapejs }}” will be removed from your cart."
+               data-action="Remove item">
+              <i class="bi bi-x-lg"></i>
+            </a>
+
+            <!-- Image -->
+            <a class="ci-media" href="{% url 'get_specific_product_details' item.product.product_slug %}">
+              <img src="{{ item.product.product_image.url }}" alt="{{ item.product.product_name }}" loading="lazy">
+              <!-- Hardcoded like before. Replace with a real discount value when you have one. -->
+              <span class="ci-save">29% off</span>
+            </a>
+
+            <!-- Info -->
+            <div class="ci-info">
+              <a class="ci-name" href="{% url 'get_specific_product_details' item.product.product_slug %}">
+                {{ item.product.product_name }}
+              </a>
+              <p class="ci-desc">{{ item.product.product_desc|truncatechars:90 }}</p>
+              <div class="ci-meta">
+                <span class="ci-price">
+                  <b>₹{{ item.product.product_price }}</b>
+                  <s>₹3,499</s>
+                </span>
+                <span class="ci-rating" title="4.5 out of 5">
+                  <i class="bi bi-star-fill"></i> 4.5 <span>(128)</span>
+                </span>
+              </div>
+            </div>
+
+            <!-- Quantity -->
+            <form method="post" action="{% url 'update_cart_quantity' item.product.id %}" class="qty-form">
+              {% csrf_token %}
+              <div class="qty">
+                <button type="button" data-step="-1" aria-label="Decrease quantity"{% if item.quantity <= 1 %} disabled{% endif %}>−</button>
+                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="99" inputmode="numeric" aria-label="Quantity">
+                <button type="button" data-step="1" aria-label="Increase quantity">+</button>
+              </div>
+              <noscript><button type="submit" class="cx-btn cx-btn-ghost" style="margin-top:.5rem;padding:.4rem .9rem">Update</button></noscript>
+            </form>
+
+            <!-- Line total -->
+            <div class="ci-total">
+              <small>Subtotal</small>
+              <strong class="line-total">₹{{ item.total_price }}</strong>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- RIGHT: summary -->
+      <aside class="cx-summary" aria-label="Order summary" id="summary" data-server-total="{{ total_amount }}">
+        <h2>Order summary</h2>
+
+        <div class="cx-row"><span>Items</span><b id="sumCount">{{ cart_count }}</b></div>
+        <div class="cx-row"><span>Subtotal</span><b id="sumSubtotal">₹{{ total_amount }}</b></div>
+        <div class="cx-row"><span>Delivery</span><b id="sumShip">Calculating…</b></div>
+
+        <div class="cx-sum-total">
+          <span>Total</span>
+          <strong id="sumTotal">₹{{ total_amount }}</strong>
+        </div>
+
+        <a href="{% url 'checkout' %}" class="cx-btn cx-btn-primary cx-btn-block">
+          <i class="bi bi-lock-fill"></i> Proceed to checkout
+        </a>
+        <a href="{% url 'shop' %}" class="cx-continue">Continue shopping</a>
+
+        <div class="cx-trust">
+          <div><i class="bi bi-shield-check"></i> Secure payment, your details stay private</div>
+          <div><i class="bi bi-arrow-repeat"></i> Easy returns on eligible products</div>
+          <div><i class="bi bi-headset"></i> Help available if something goes wrong</div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Mobile sticky bar -->
+    <div class="cx-mobilebar">
+      <div>
+        <small>Total</small>
+        <strong id="barTotal">₹{{ total_amount }}</strong>
+      </div>
+      <a href="{% url 'checkout' %}" class="cx-btn cx-btn-primary"><i class="bi bi-lock-fill"></i> Checkout</a>
+    </div>
+
+    {% else %}
+    <!-- Empty state -->
+    <div class="cx-empty">
+      <div class="cx-empty-icon"><i class="bi bi-bag"></i></div>
+      <h2>Your cart is empty</h2>
+      <p>Products you add will show up here, so you can review them before checkout.</p>
+      <a href="{% url 'shop' %}" class="cx-btn cx-btn-primary">Browse products</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Confirm dialog (native <dialog>, no library needed) -->
+  <dialog class="cx-dialog" id="confirmDialog" aria-labelledby="dlgTitle">
+    <div class="cx-dialog-body">
+      <div class="ic"><i class="bi bi-trash3"></i></div>
+      <h3 id="dlgTitle">Are you sure?</h3>
+      <p id="dlgText"></p>
+    </div>
+    <div class="cx-dialog-actions">
+      <button type="button" class="cx-btn cx-btn-ghost" id="dlgCancel">Keep it</button>
+      <button type="button" class="cx-btn cx-btn-danger" id="dlgOk">Remove</button>
+    </div>
+  </dialog>
+
+  <div class="cx-toast" id="toast" role="status" aria-live="polite"></div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- Helpers ---------- */
+  var $  = function (s, c) { return (c || document).querySelector(s); };
+  var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
+  var toNumber = function (v) { return parseFloat(String(v).replace(/[^0-9.]/g, '')) || 0; };
+  var inr = function (n) {
+    return '₹' + n.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+  };
+
+  var items = $$('.cart-item');
+  if (!items.length) return;
+
+  /* ---------- Toast ---------- */
+  var toast = $('#toast'), toastTimer;
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 1800);
+  }
+
+  /* ---------- Totals (recomputed live from the rows) ---------- */
+  var shipBox = $('#shipBox');
+  var threshold = toNumber(shipBox.dataset.threshold);
+  var SHIPPING_FEE = 49; // shown only if below the free-delivery threshold; adjust to your backend
+
+  function recalc() {
+    var subtotal = 0, count = 0;
+
+    items.forEach(function (row) {
+      var price = toNumber(row.dataset.price);
+      var qty   = Math.max(1, parseInt($('input[name="quantity"]', row).value, 10) || 1);
+      var line  = price * qty;
+      $('.line-total', row).textContent = inr(line);
+      subtotal += line;
+      count    += qty;
+    });
+
+    var free = subtotal >= threshold;
+    var ship = free ? 0 : SHIPPING_FEE;
+
+    $('#sumCount').textContent = count;
+    $('#headCount').textContent = count;
+    $('#sumSubtotal').textContent = inr(subtotal);
+    $('#sumTotal').textContent = inr(subtotal);   // Delivery is informational; the backend decides the final charge.
+    $('#barTotal').textContent = inr(subtotal);
+
+    var shipEl = $('#sumShip');
+    shipEl.textContent = free ? 'Free' : inr(ship) + ' (added at checkout)';
+    shipEl.classList.toggle('free', free);
+
+    // Free delivery progress
+    var pct = Math.min(100, Math.round((subtotal / threshold) * 100));
+    $('#shipFill').style.width = pct + '%';
+    $('#shipProgress').setAttribute('aria-valuenow', pct);
+    shipBox.classList.toggle('is-free', free);
+    $('#shipText').textContent = free
+      ? 'You’ve unlocked free delivery on this order.'
+      : 'Add ' + inr(threshold - subtotal) + ' more to get free delivery.';
+  }
+
+  /* ---------- Quantity steppers (debounced auto-save) ---------- */
+  items.forEach(function (row) {
+    var form  = $('.qty-form', row);
+    var input = $('input[name="quantity"]', form);
+    var minus = $('[data-step="-1"]', form);
+    var timer;
+
+    function clamp(v) { return Math.min(99, Math.max(1, v || 1)); }
+
+    function syncMinus() { minus.disabled = clamp(parseInt(input.value, 10)) <= 1; }
+
+    function queueSave() {
+      input.value = clamp(parseInt(input.value, 10));
+      syncMinus();
+      recalc();
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        row.classList.add('is-updating');
+        showToast('Updating your cart…');
+        form.submit();
+      }, 600);
+    }
+
+    form.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-step]');
+      if (!btn || btn.disabled) return;
+      var next = clamp(parseInt(input.value, 10) + parseInt(btn.dataset.step, 10));
+      if (next === parseInt(input.value, 10)) return;
+      input.value = next;
+      queueSave();
+    });
+
+    input.addEventListener('change', queueSave);
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); queueSave(); }
+    });
+  });
+
+  /* ---------- Confirm dialog for remove / clear ---------- */
+  var dlg = $('#confirmDialog'), pendingLink = null;
+
+  $$('[data-confirm]').forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      pendingLink = link;
+      $('#dlgTitle').textContent = link.dataset.title || 'Are you sure?';
+      $('#dlgText').textContent  = link.dataset.text || '';
+      $('#dlgOk').textContent    = link.dataset.action || 'Confirm';
+      if (typeof dlg.showModal === 'function') {
+        dlg.showModal();
+      } else if (window.confirm(link.dataset.text || 'Are you sure?')) {
+        window.location.href = link.href; // very old browsers
+      }
+    });
+  });
+
+  $('#dlgCancel').addEventListener('click', function () { dlg.close(); pendingLink = null; });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); }); // click on backdrop
+
+  $('#dlgOk').addEventListener('click', function () {
+    if (!pendingLink) return;
+    var href = pendingLink.href;
+    var row = pendingLink.closest('.cart-item');
+    dlg.close();
+    if (row) row.classList.add('is-removing');
+    setTimeout(function () { window.location.href = href; }, row ? 280 : 0);
+  });
+
+  /* ---------- Init ---------- */
+  recalc();
+})();
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} 
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Cart{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+
+  <!-- Header Section -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h2 fw-bold text-dark mb-1">My Cart Items</h1>
+      <p>{{ cart_count }} products in cart</p>
+    </div>
+    <div>
+      {% if cart_items %}
+      <a href="{% url 'clear_cart' %}" class="btn btn-outline-danger btn-sm px-3"
+         onclick="return confirm('Are you sure you want to clear the entire cart?')">
+        <i class="bi bi-trash me-1"></i> Clear All
+      </a>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if cart_items %}
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+    {% for item in cart_items %}
+    <div class="col">
+      <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden position-relative">
+
+        <!-- Discount Badge (hardcoded like your favourites page) -->
+        <span class="position-absolute top-0 start-0 badge bg-danger m-3 px-2 py-1 fw-normal" style="z-index: 2">
+          29% OFF
+        </span>
+
+        <!-- Remove from Cart -->
+        <a href="{% url 'remove_from_cart' item.product.id %}"
+           class="position-absolute top-0 end-0 btn btn-light rounded-circle p-2 m-3 shadow-sm border-0 d-flex align-items-center justify-content-center"
+           style="z-index: 2; width: 32px; height: 32px"
+           title="Remove from cart">
+          <i class="bi bi-trash text-danger small"></i>
+        </a>
+
+        <!-- Product Image -->
+        <img src="{{ item.product.product_image.url }}"
+             class="card-img-top object-fit-cover"
+             alt="{{ item.product.product_name }}"
+             style="height: 220px">
+
+        <div class="card-body p-3 d-flex flex-column">
+          <h5 class="card-title fw-bold fs-6 text-dark mb-1">
+            {{ item.product.product_name }}
+          </h5>
+
+          <p class="text-muted small mb-2">
+            {{ item.product.product_desc|truncatechars:60 }}
+          </p>
+
+          <!-- Rating (same as favourites) -->
+          <div class="d-flex align-items-center mb-2">
+            <div class="text-warning small me-1">
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-half"></i>
+            </div>
+            <span class="small text-muted">(128)</span>
+          </div>
+
+          <!-- Price -->
+          <div class="d-flex align-items-baseline mb-2">
+            <span class="fw-bold text-primary fs-5 me-2">₹{{ item.product.product_price }}</span>
+            <span class="text-muted text-decoration-line-through small">₹3,499</span>
+          </div>
+
+          <!-- Quantity Controls -->
+          <form method="post" action="{% url 'update_cart_quantity' item.product.id %}" class="mb-3">
+            {% csrf_token %}
+            <div class="input-group input-group-sm" style="max-width: 140px;">
+              <button type="submit" name="quantity" value="{{ item.quantity|add:'-1' }}" class="btn btn-outline-secondary">−</button>
+              <input type="number" name="quantity" value="{{ item.quantity }}" min="1"
+                     class="form-control text-center" style="max-width: 50px;">
+              <button type="submit" name="quantity" value="{{ item.quantity|add:'1' }}" class="btn btn-outline-secondary">+</button>
+            </div>
+          </form>
+
+          <div class="mt-auto">
+            <p class="fw-semibold mb-2">Subtotal: ₹{{ item.total_price }}</p>
+            <a href="{% url 'get_specific_product_details' item.product.product_slug %}"
+               class="btn btn-outline-dark btn-sm w-100">
+              <i class="bi bi-eye me-1"></i> View Details
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Cart Summary -->
+  <div class="row mt-5">
+    <div class="col-md-6 offset-md-6">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title fw-bold">Cart Summary</h5>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Total Items:</span>
+            <span>{{ cart_count }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-3">
+            <span class="fw-bold">Total Amount:</span>
+            <span class="fw-bold text-primary fs-5">₹{{ total_amount }}</span>
+          </div>
+          <a href="{% url 'checkout' %}" class="btn btn-dark w-100">Proceed to Checkout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% else %}
+  <div class="text-center py-5">
+    <i class="bi bi-cart-x display-1 text-muted"></i>
+    <h4 class="mt-3 text-muted">Your cart is empty</h4>
+    <p class="text-muted">Looks like you haven’t added anything yet.</p>
+    <a href="{% url 'shop' %}" class="btn btn-dark mt-2">Continue Shopping</a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %} {% endcomment %}

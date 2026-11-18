@@ -1,0 +1,543 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shop - Bookly{% endblock %}
+
+{% block body %}
+
+<style>
+    :root {
+        --primary-accent: #f0ad4e;
+        --primary-hover: #e09b3d;
+        --dark-accent: #1e293b;
+        --light-bg: #f8fafc;
+        --card-bg: #ffffff;
+        --text-dark: #0f172a;
+        --text-muted: #64748b;
+        --border-color: #e2e8f0;
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 20px;
+        --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .shop-section {
+        padding: 50px 0;
+        background-color: var(--light-bg);
+        min-height: 85vh;
+    }
+
+    /* Section Header */
+    .shop-header {
+        margin-bottom: 35px;
+    }
+
+    .shop-title {
+        font-weight: 800;
+        color: var(--text-dark);
+        letter-spacing: -0.5px;
+        margin-bottom: 8px;
+    }
+
+    .shop-subtitle {
+        color: var(--text-muted);
+        font-size: 1.05rem;
+        margin-bottom: 0;
+    }
+
+    /* Search Bar Wrapper */
+    .search-wrapper {
+        max-width: 600px;
+        margin: 0 auto 30px auto;
+    }
+
+    .shop-search-form {
+        display: flex;
+        align-items: center;
+        background: var(--card-bg);
+        padding: 6px;
+        border-radius: 50px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        transition: var(--transition);
+    }
+
+    .shop-search-form:focus-within {
+        border-color: var(--primary-accent);
+        box-shadow: 0 4px 20px rgba(240, 173, 78, 0.2);
+    }
+
+    .shop-search-form input {
+        flex: 1;
+        border: none;
+        outline: none;
+        padding: 10px 20px;
+        background: transparent;
+        font-size: 0.95rem;
+        color: var(--text-dark);
+    }
+
+    .search-btn-icon {
+        background: var(--primary-accent);
+        color: #fff;
+        border: none;
+        border-radius: 50px;
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition);
+        flex-shrink: 0;
+    }
+
+    .search-btn-icon:hover {
+        background: var(--primary-hover);
+        transform: scale(1.05);
+    }
+
+    .clear-btn {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-size: 1.3rem;
+        padding: 0 12px;
+        cursor: pointer;
+        line-height: 1;
+        transition: var(--transition);
+    }
+
+    .clear-btn:hover {
+        color: #ef4444;
+    }
+
+    /* Category List Pills */
+    .category-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 30px;
+    }
+
+    .category-link {
+        padding: 8px 18px;
+        border: 1px solid var(--border-color);
+        border-radius: 50px;
+        background: var(--card-bg);
+        color: var(--text-muted);
+        font-size: 0.88rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .category-link:hover {
+        border-color: var(--primary-accent);
+        color: var(--primary-accent);
+    }
+
+    .category-link.active {
+        background: var(--primary-accent);
+        border-color: var(--primary-accent);
+        color: #fff;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(240, 173, 78, 0.3);
+    }
+
+    /* Toolbar / Sort Bar */
+    .shop-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--card-bg);
+        padding: 12px 20px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-color);
+        margin-bottom: 28px;
+    }
+
+    .shop-toolbar p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .shop-toolbar select {
+        padding: 8px 16px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        background: var(--card-bg);
+        color: var(--text-dark);
+        font-size: 0.9rem;
+        outline: none;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .shop-toolbar select:focus {
+        border-color: var(--primary-accent);
+    }
+
+    /* Book Cards */
+    .book-card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        transition: var(--transition);
+    }
+
+    .book-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+        border-color: transparent;
+    }
+
+    .book-image-wrap {
+        position: relative;
+        height: 250px;
+        padding: 20px;
+        background: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .book-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        transition: transform 0.35s ease;
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.12));
+    }
+
+    .book-card:hover .book-image {
+        transform: scale(1.06);
+    }
+
+    .book-info {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    .book-category {
+        color: var(--text-muted);
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+
+    .book-name {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 8px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 2.7rem;
+        line-height: 1.35;
+    }
+
+    .book-price {
+        color: #d97706;
+        font-size: 1.2rem;
+        font-weight: 800;
+        margin-bottom: 16px;
+        margin-top: auto;
+    }
+
+    .book-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .book-actions a {
+        flex: 1;
+        text-align: center;
+        padding: 10px 12px;
+        border-radius: var(--radius-sm);
+        text-decoration: none;
+        font-size: 0.88rem;
+        font-weight: 600;
+        transition: var(--transition);
+    }
+
+    .view-btn {
+        background: #f1f5f9;
+        color: var(--text-dark);
+    }
+
+    .view-btn:hover {
+        background: #e2e8f0;
+        color: var(--text-dark);
+    }
+
+    .cart-btn {
+        background: var(--dark-accent);
+        color: #fff;
+    }
+
+    .cart-btn:hover {
+        background: #0f172a;
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(30, 41, 59, 0.25);
+    }
+
+    /* Empty state */
+    .no-products {
+        padding: 50px 20px;
+        text-align: center;
+        background: var(--card-bg);
+        border-radius: var(--radius-md);
+        border: 1px dashed var(--border-color);
+        color: var(--text-muted);
+    }
+
+    .no-products h5 {
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 8px;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .category-list {
+            justify-content: flex-start;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding-bottom: 8px;
+            flex-wrap: nowrap;
+        }
+
+        .category-link {
+            flex-shrink: 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .shop-toolbar {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .shop-toolbar select {
+            width: 100%;
+        }
+
+        .book-image-wrap {
+            height: 200px;
+        }
+
+        .book-info {
+            padding: 14px;
+        }
+        
+        .book-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<section class="shop-section">
+    <div class="container">
+
+        <!-- Header -->
+        <div class="text-center shop-header">
+            <h2 class="shop-title">Explore Our Books</h2>
+            <p class="shop-subtitle">Find your next favourite book at Bookly.</p>
+        </div>
+
+        <!-- Filter Form -->
+        <form method="GET" action="{% url 'shop' %}" id="shopFilterForm">
+
+            <!-- Compact Integrated Search Bar -->
+            <div class="search-wrapper">
+                <div class="shop-search-form">
+                    <input
+                        type="search"
+                        name="q"
+                        value="{{ search_query }}"
+                        placeholder="Search title, author, or genre..."
+                        aria-label="Search books"
+                    >
+                    {% if search_query %}
+                    <button
+                        type="button"
+                        id="clearFilters"
+                        class="clear-btn"
+                        aria-label="Clear search"
+                        title="Clear search"
+                    >
+                        &times;
+                    </button>
+                    {% endif %}
+                    <button type="submit" class="search-btn-icon" aria-label="Search">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Category Filter Pills -->
+            <div class="category-list">
+                <button
+                    type="button"
+                    class="category-link {% if not selected_category %}active{% endif %}"
+                    data-category=""
+                >
+                    All Books
+                </button>
+
+                {% for category in categories %}
+                    <button
+                        type="button"
+                        class="category-link {% if selected_category == category.id|stringformat:'s' %}active{% endif %}"
+                        data-category="{{ category.id }}"
+                    >
+                        {{ category.category_name }}
+                    </button>
+                {% endfor %}
+            </div>
+
+            <input
+                type="hidden"
+                name="category"
+                id="categoryInput"
+                value="{{ selected_category }}"
+            >
+
+            <!-- Sorting & Counter Toolbar -->
+            <div class="shop-toolbar">
+                <p class="mb-0">
+                    Showing <strong>{{ products|length }}</strong> 
+                    book{{ products|length|pluralize }}
+                </p>
+
+                <select name="sort" id="sortSelect" aria-label="Sort books">
+                    <option value="">Sort by: Featured</option>
+                    <option value="price_low" {% if selected_sort == "price_low" %}selected{% endif %}>
+                        Price: Low to High
+                    </option>
+                    <option value="price_high" {% if selected_sort == "price_high" %}selected{% endif %}>
+                        Price: High to Low
+                    </option>
+                    <option value="name" {% if selected_sort == "name" %}selected{% endif %}>
+                        Name: A to Z
+                    </option>
+                    <option value="newest" {% if selected_sort == "newest" %}selected{% endif %}>
+                        Newest Arrivals
+                    </option>
+                </select>
+            </div>
+        </form>
+
+        <!-- Product Grid -->
+        <div class="row g-4">
+            {% for product in products %}
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="book-card">
+
+                        <div class="book-image-wrap">
+                            {% if product.product_image %}
+                                <img
+                                    src="{{ product.product_image.url }}"
+                                    alt="{{ product.product_name }}"
+                                    class="book-image"
+                                    loading="lazy"
+                                >
+                            {% else %}
+                                <span class="text-muted small">No image available</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="book-info">
+                            <div class="book-category">
+                                {{ product.product_category.category_name }}
+                            </div>
+
+                            <h5 class="book-name" title="{{ product.product_name }}">
+                                {{ product.product_name }}
+                            </h5>
+
+                            <div class="book-price">
+                                ₹{{ product.product_price }}
+                            </div>
+
+                            <div class="book-actions">
+                                <a
+                                    href="{% url 'get_specific_product_details' product.product_slug %}"
+                                    class="view-btn"
+                                >
+                                    View
+                                </a>
+
+                                <a
+                                    href="{% url 'add_to_cart' product.id %}"
+                                    class="cart-btn"
+                                >
+                                    + Add
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="no-products">
+                        <h5>No books found</h5>
+                        <p class="mb-0">Try searching for something else or clear your active filters.</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const filterForm = document.getElementById("shopFilterForm");
+        const categoryInput = document.getElementById("categoryInput");
+        const sortSelect = document.getElementById("sortSelect");
+        const clearButton = document.getElementById("clearFilters");
+        const categoryButtons = document.querySelectorAll(".category-link");
+
+        // Category Selection
+        categoryButtons.forEach(function (button) {
+            button.addEventListener("click", function () {
+                categoryInput.value = button.dataset.category;
+                filterForm.submit();
+            });
+        });
+
+        // Instant Sort Change
+        sortSelect.addEventListener("change", function () {
+            filterForm.submit();
+        });
+
+        // Reset Filters
+        if (clearButton) {
+            clearButton.addEventListener("click", function () {
+                window.location.href = "{% url 'shop' %}";
+            });
+        }
+    });
+</script>
+
+{% endblock %}
+
